@@ -1,70 +1,71 @@
-import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { View, Text, TextInput, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 const EmailList = ({ onUserClick, selectedUser }) => {
-    const [usersWithMessages, setUsersWithMessages] = useState([]);
-    const [allUsers, setAllUsers] = useState([]);
-    const [searchQueryMessages, setSearchQueryMessages] = useState('');
-    const [searchQueryAllUsers, setSearchQueryAllUsers] = useState('');
+    const [usersWithMessages, setUsersWithMessages] = useState([]); // Xabar almashgan foydalanuvchilar
+    const [allUsers, setAllUsers] = useState([]); // Barcha foydalanuvchilar
+    const [searchQueryMessages, setSearchQueryMessages] = useState(''); // Xabarlar bo'yicha qidirish
+    const [searchQueryAllUsers, setSearchQueryAllUsers] = useState(''); // Barcha foydalanuvchilar uchun qidirish
     const [loading, setLoading] = useState(true);
-    const [loggedInUser, setLoggedInUser] = useState(null);
+    const [loggedInUser, setLoggedInUser] = useState(null); // Store logged-in user
 
     useEffect(() => {
-        // Retrieve logged-in user from AsyncStorage
-        AsyncStorage.getItem('loggedInUser')
-            .then((user) => {
-                if (user) {
-                    setLoggedInUser(JSON.parse(user));
-                }
-            })
-            .catch((error) => console.error("Error fetching logged-in user from AsyncStorage:", error));
+        fetchLoggedInUser();
+        fetchUsers();
     }, []);
+
+    const fetchLoggedInUser = async () => {
+        const user = await AsyncStorage.getItem('loggedInUser');
+        if (user) {
+            setLoggedInUser(JSON.parse(user)); // Assuming the logged-in user is stored as a JSON string
+        }
+    };
 
     useEffect(() => {
         if (loggedInUser) {
-            fetchUsers();
             fetchMessages();
         }
     }, [loggedInUser]);
 
     const fetchMessages = () => {
-        axios.get('https://avtoelonnode.onrender.com/messages') // Ensure the correct API endpoint
+        axios.get('https://insta-lvyt.onrender.com/messages')
             .then(response => {
                 const messages = response.data;
                 const filteredUsers = messages
-                    .filter(msg => msg.sender === loggedInUser.email || msg.receiver === loggedInUser.email)
-                    .map(msg => msg.sender === loggedInUser.email ? msg.receiver : msg.sender)
-                    .filter((email, index, self) => self.indexOf(email) === index);
+                    .filter(msg => msg.sender === loggedInUser.nomer || msg.receiver === loggedInUser.nomer)
+                    .map(msg => msg.sender === loggedInUser.nomer ? msg.receiver : msg.sender)
+                    .filter((nomer, index, self) => self.indexOf(nomer) === index); // Takrorlanuvchilarni olib tashlash
 
-                setUsersWithMessages(allUsers.filter(user => filteredUsers.includes(user.email)));
+                // Xabar almashgan foydalanuvchilarni o'rnating
+                setUsersWithMessages(allUsers.filter(user => filteredUsers.includes(user.nomer)));
             })
-            .catch(error => console.error("Error fetching messages:", error));
+            .catch(error => console.error("Xabarlarni olishda xato:", error));
     };
 
     const fetchUsers = () => {
-        axios.get('https://avtoelonnode.onrender.com/users') // Ensure the correct API endpoint
+        axios.get('https://avtoelonnode.onrender.com/users')
             .then(response => {
                 setAllUsers(response.data);
                 setLoading(false);
             })
             .catch(error => {
-                console.error("Error fetching users:", error);
+                console.error("Foydalanuvchilarni olishda xato:", error);
                 setLoading(false);
             });
     };
 
+    // Foydalanuvchilarni xabarlar bo'yicha filtrlash
     const getFilteredUsersByMessages = () => {
-        return usersWithMessages.filter(user => 
+        return usersWithMessages.filter(user =>
             user.email.toLowerCase().includes(searchQueryMessages.toLowerCase())
         );
     };
 
     const getFilteredAllUsers = () => {
-        return allUsers.filter(user => 
+        return allUsers.filter(user =>
             user.email.toLowerCase().includes(searchQueryAllUsers.toLowerCase())
         );
     };
@@ -74,90 +75,100 @@ const EmailList = ({ onUserClick, selectedUser }) => {
     };
 
     return (
-        <View style={{ flex: 1, backgroundColor: '#2d2d2d' }}>
+        <View style={{ flex: 1, backgroundColor: '#FFF' }}>
             <TextInput
                 style={{
-                    backgroundColor: '#3a3a3a',
-                    color: '#fff',
-                    padding: 12,
-                    margin: 16,
-                    borderRadius: 25,
+                    padding: 10,
+                    margin: 15,
+                    borderRadius: 30,
                     borderWidth: 1,
-                    borderColor: '#4a4a4a',
+                    borderColor: '#666',
+                    backgroundColor: '#333',
+                    color: 'white',
+                    fontSize: 16,
                 }}
-                placeholder="Search all users..."
-                placeholderTextColor="#aaa"
-                value={searchQueryAllUsers}
-                onChangeText={(text) => setSearchQueryAllUsers(text)}
-            />
-            <TextInput
-                style={{
-                    backgroundColor: '#3a3a3a',
-                    color: '#fff',
-                    padding: 12,
-                    margin: 16,
-                    borderRadius: 25,
-                    borderWidth: 1,
-                    borderColor: '#4a4a4a',
-                }}
-                placeholder="Search by messages..."
-                placeholderTextColor="#aaa"
+                placeholder="Xabarlar bo'yicha qidirish..."
+                placeholderTextColor="#ccc"
                 value={searchQueryMessages}
                 onChangeText={(text) => {
                     setSearchQueryMessages(text);
-                    fetchMessages();
                 }}
             />
-            
-            <View style={{ flex: 1, padding: 16 }}>
+
+            <TextInput
+                style={{
+                    padding: 10,
+                    margin: 15,
+                    borderRadius: 30,
+                    borderWidth: 1,
+                    borderColor: '#666',
+                    backgroundColor: '#333',
+                    color: 'white',
+                    fontSize: 16,
+                }}
+                placeholder="Barcha foydalanuvchilarni qidirish..."
+                placeholderTextColor="#ccc"
+                value={searchQueryAllUsers}
+                onChangeText={(text) => {
+                    setSearchQueryAllUsers(text);
+                }}
+            />
+
+            <View style={{ flex: 1 }}>
                 {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
+                    <ActivityIndicator size="large" color="#00ff00" style={{ marginTop: 20 }} />
                 ) : (
                     <>
-                        {/* All Users Filtering */}
-                        <FlatList
-                            data={searchQueryAllUsers ? getFilteredAllUsers() : allUsers}
-                            keyExtractor={(item) => item.email}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity 
-                                    onPress={() => handleUserClick(item)} 
+                        {/* Xabarlar bo'yicha filtrlash */}
+                        {getFilteredUsersByMessages().map((user) =>
+                            user && user.nomer ? ( // Check for `user` and `user.nomer` to ensure they exist
+                                <TouchableOpacity
+                                    key={user.nomer} // Use `nomer` as the key instead of `email`
                                     style={{
+                                        paddingVertical: 12,
+                                        paddingHorizontal: 15,
                                         flexDirection: 'row',
-                                        alignItems: 'center',
-                                        padding: 16,
-                                        backgroundColor: selectedUser === item.email ? '#3498db' : '#333',
-                                        marginBottom: 8,
+                                        backgroundColor: selectedUser === user.nomer ? '#1D72B8' : '#333',
+                                        marginBottom: 5,
                                         borderRadius: 8,
+                                        alignItems: 'center',
                                     }}
+                                    onPress={() => handleUserClick(user)}
                                 >
-                                    <FontAwesomeIcon icon={faUserCircle} size={30} color="#aaa" />
-                                    <Text style={{ color: '#fff', marginLeft: 16, fontSize: 16 }}>{item.email}</Text>
+                                    <Icon name="user-circle" size={24} color="#888" style={{ marginRight: 10 }} />
+                                    <Text style={{ color: 'white', fontWeight: '500' }}>
+                                        {user.nomer ? user.nomer.toString() : 'No Nomer'} {/* Safeguard for nomer */}
+                                    </Text>
                                 </TouchableOpacity>
-                            )}
-                        />
-                        {/* Messages Filtering */}
-                        <FlatList
-                            data={getFilteredUsersByMessages()}
-                            keyExtractor={(item) => item.email}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity 
-                                    onPress={() => handleUserClick(item)} 
+                            ) : null // Skip rendering if user or nomer is undefined
+                        )}
+
+                        {/* Barcha foydalanuvchilarni qidirish */}
+                        {searchQueryAllUsers && getFilteredAllUsers().map((user) =>
+                            user && user.nomer ? ( // Check for `user` and `user.nomer`
+                                <TouchableOpacity
+                                    key={user.nomer} // Use `nomer` as the key
                                     style={{
+                                        paddingVertical: 12,
+                                        paddingHorizontal: 15,
                                         flexDirection: 'row',
-                                        alignItems: 'center',
-                                        padding: 16,
-                                        backgroundColor: selectedUser === item.email ? '#3498db' : '#333',
-                                        marginBottom: 8,
+                                        backgroundColor: selectedUser === user.nomer ? '#1D72B8' : '#333',
+                                        marginBottom: 5,
                                         borderRadius: 8,
+                                        alignItems: 'center',
                                     }}
+                                    onPress={() => handleUserClick(user)}
                                 >
-                                    <FontAwesomeIcon icon={faUserCircle} size={30} color="#aaa" />
-                                    <Text style={{ color: '#fff', marginLeft: 16, fontSize: 16 }}>{item.email}</Text>
+                                    <Icon name="user-circle" size={24} color="#888" style={{ marginRight: 10 }} />
+                                    <Text style={{ color: 'white', fontWeight: '500' }}>
+                                        {user.nomer ? user.nomer.toString() : 'No Nomer'} {/* Safeguard for nomer */}
+                                    </Text>
                                 </TouchableOpacity>
-                            )}
-                        />
+                            ) : null
+                        )}
                     </>
                 )}
+
             </View>
         </View>
     );

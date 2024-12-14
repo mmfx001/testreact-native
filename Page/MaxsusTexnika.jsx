@@ -1,14 +1,9 @@
+// MaxsusTexnika.jsx
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 
-const MaxsusTexnika = () => {
+const MaxsusTexnika = ({ navigation }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,20 +23,28 @@ const MaxsusTexnika = () => {
     fetchMaxsusTexnika();
   }, []);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
+  const renderCar = ({ item }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('MaxsusDetails', { carId: item._id })} // Pass the selected car ID
+    >
       <View style={styles.imageContainer}>
         <Image
           source={{ uri: item.img1 || 'https://via.placeholder.com/150' }}
           style={styles.image}
         />
+        <View style={styles.vipBadge}>
+          <Text style={styles.vipText}>VIP</Text>
+        </View>
       </View>
       <Text style={styles.title}>{item.marka}</Text>
       <Text style={styles.price}>{item.narx}</Text>
-      <Text style={styles.details}>{item.texnikaturi}</Text>
-      <Text style={styles.details}>{item.qutisi}</Text>
-      <Text style={styles.details}>{item.shahar}</Text>
-    </View>
+      <View style={styles.details}>
+        <Text style={styles.detailText}>{item.yili} yil</Text>
+        <Text style={styles.detailText}>{item.yoqilgi}</Text>
+        <Text style={styles.detailText}>{item.shahar}</Text>
+      </View>
+    </TouchableOpacity>
   );
 
   if (loading) {
@@ -64,7 +67,7 @@ const MaxsusTexnika = () => {
     <FlatList
       data={data}
       keyExtractor={(item) => item._id}
-      renderItem={renderItem}
+      renderItem={renderCar}
       contentContainerStyle={styles.container}
     />
   );
@@ -80,8 +83,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 10,
     elevation: 3,
-    display: "flex",
-    justifyContent: "space-between"
+    display: 'flex',
+    justifyContent: 'space-between',
   },
   imageContainer: {
     position: 'relative',
@@ -90,6 +93,18 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 150,
     borderRadius: 10,
+  },
+  vipBadge: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    backgroundColor: '#FFD700',
+    padding: 5,
+    borderRadius: 5,
+  },
+  vipText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
   title: {
     fontSize: 16,
@@ -106,6 +121,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#555',
     marginTop: 5,
+  },
+  detailText: {
+    marginBottom: 3,
   },
   center: {
     flex: 1,

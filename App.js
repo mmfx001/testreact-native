@@ -12,13 +12,16 @@ import ChatScreen from './Componient/ChatScreen';
 import Footer from './Componient/Footer';
 
 import Home from './Componient/HomeScreen';
+import TamirlashDetails from './Page/TamirlashDetails';
 import YukMashinalari from './Page/YukMashina';
 import Sell from './Page/YukMashina'; // Ensure this is the correct import
 import EhtiyotQismlari from './Page/EhtiyotQismlar';
 import MaxsusTexnika from './Page/MaxsusTexnika';
+import EhtiytDetails from './Page/EhtiyotDetails'
 import CategoryDetails from './Page/Cars';
 import Tamirlash from './Page/Tamirlash';
 import Title from './Page/Title';
+import MaxsusDetails from './Page/MaxsusDetails';
 
 // Create Stack Navigator
 const Stack = createStackNavigator();
@@ -94,6 +97,22 @@ const App = () => {
               name="Title" 
               component={Title} 
               options={{ title: 'Avtomobil maʼlumotlari' }} 
+            />
+                <Stack.Screen 
+              name="EhtiytDetails" 
+              component={EhtiytDetails} 
+              options={{ title: 'Avtomobil maʼlumotlari' }} 
+            />
+              
+                <Stack.Screen 
+              name="TamirlashDetails" 
+              component={TamirlashDetails} 
+              options={{ title: 'Avtomobil maʼlumotlari' }} 
+            />
+               <Stack.Screen 
+              name="MaxsusDetails" 
+              component={MaxsusDetails} 
+              options={{ title: 'MaxsusDetails' }} 
             />
           </Stack.Navigator>
         </View>

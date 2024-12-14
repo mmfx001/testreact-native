@@ -1,24 +1,17 @@
-// EhtiyotQismlari.js
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 
-const EhtiyotQismlari = () => {
-  const [parts, setParts] = useState([]);
+const EhtiyotQismlari = ({ navigation }) => {
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchParts = async () => {
+    const fetchMaxsusTexnika = async () => {
       try {
         const response = await axios.get('https://avtoelonnode.onrender.com/ehtiyotqisimlar');
-        setParts(response.data);
+        setData(response.data);
       } catch (err) {
         setError(err.message || 'Error fetching data');
       } finally {
@@ -26,17 +19,33 @@ const EhtiyotQismlari = () => {
       }
     };
 
-    fetchParts();
+    fetchMaxsusTexnika();
   }, []);
 
-  const renderPart = ({ item }) => (
-    <View style={styles.card}>
-      <Image source={{ uri: item.img1 }} style={styles.image} />
+  const renderCar = ({ item }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('EhtiytDetails', { carId: item._id })} // Ensure EhtiytDetails screen exists in your navigator
+    >
+      <View style={styles.imageContainer}>
+        <Image
+          source={{ uri: item.img1 || 'https://via.placeholder.com/150' }}
+          style={styles.image}
+        />
+        {item.vip && (
+          <View style={styles.vipBadge}>
+            <Text style={styles.vipText}>VIP</Text>
+          </View>
+        )}
+      </View>
       <Text style={styles.title}>{item.modeluchun}</Text>
-      <Text style={styles.detail}>{item.qismturi}</Text>
       <Text style={styles.price}>{item.narx}</Text>
-      <Text style={styles.detail}>{item.shahar}</Text>
-    </View>
+      <View style={styles.details}>
+        <Text style={styles.detailText}>{item.yetkazish} </Text>
+        <Text style={styles.detailText}>{item.holati}</Text>
+        <Text style={styles.detailText}>{item.shahar}</Text>
+      </View>
+    </TouchableOpacity>
   );
 
   if (loading) {
@@ -57,9 +66,9 @@ const EhtiyotQismlari = () => {
 
   return (
     <FlatList
-      data={parts}
+      data={data}
       keyExtractor={(item) => item._id}
-      renderItem={renderPart}
+      renderItem={renderCar}
       contentContainerStyle={styles.container}
     />
   );
@@ -70,30 +79,52 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     borderRadius: 10,
     padding: 10,
     marginVertical: 10,
     elevation: 3,
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  imageContainer: {
+    position: 'relative',
   },
   image: {
     width: '100%',
     height: 150,
     borderRadius: 10,
   },
+  vipBadge: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    backgroundColor: '#FFD700',
+    padding: 5,
+    borderRadius: 5,
+  },
+  vipText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
     marginVertical: 5,
+    color: '#333',
   },
   price: {
     fontSize: 14,
     fontWeight: 'bold',
     color: '#007BFF',
   },
-  detail: {
-    fontSize: 14,
-    color: '#666',
+  details: {
+    fontSize: 12,
+    color: '#555',
+    marginTop: 5,
+  },
+  detailText: {
+    marginBottom: 3,
   },
   center: {
     flex: 1,

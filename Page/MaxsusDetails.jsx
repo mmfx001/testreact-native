@@ -31,9 +31,10 @@ const HeartIcon = ({ isLiked, onClick, likeCount }) => (
   </View>
 );
 
-const Title = ({ route, navigation }) => {
-  const { data } = route.params;
-  const _id = data._id;
+const MaxsusDetails = ({ route, navigation }) => {
+  const { carId } = route.params;
+  console.log(carId);
+  
 
   const [car, setCar] = useState(null);
   const [error, setError] = useState(null);
@@ -60,7 +61,7 @@ const Title = ({ route, navigation }) => {
     const fetchData = async () => {
       try {
         const [postsResponse, usersResponse] = await Promise.all([
-          axios.get(`https://avtoelonnode.onrender.com/yengilavtomobil/${_id}`),
+          axios.get(`https://avtoelonnode.onrender.com/ehtiyotqisimlar/${carId}`),
           axios.get('https://avtoelonnode.onrender.com/users'),
         ]);
 
@@ -90,7 +91,7 @@ const Title = ({ route, navigation }) => {
     if (loggedInUser) {
       fetchData();
     }
-  }, [_id, loggedInUser]);
+  }, [carId, loggedInUser]);
 
   const handleLikeToggle = async (item) => {
     if (!loggedInUser) {
@@ -120,7 +121,7 @@ const Title = ({ route, navigation }) => {
     try {
       await Promise.all([
         axios.put(`https://avtoelonnode.onrender.com/users/${user._id}`, updatedUser),
-        axios.put(`https://avtoelonnode.onrender.com/yengilavtomobil/${item._id}`, updatedCar),
+        axios.put(`https://avtoelonnode.onrender.com/ehtiyotqisimlar/${item._id}`, updatedCar),
       ]);
 
       setUsers((prevUsers) =>
@@ -141,7 +142,7 @@ const Title = ({ route, navigation }) => {
 
     try {
       const response = await axios.get(
-        `https://avtoelonnode.onrender.com/yengilavtomobil?marka=${car.marka}`
+        `https://avtoelonnode.onrender.com/ehtiyotqisimlar?marka=${car.marka}`
       );
       const similarCars = response.data;
 
@@ -217,67 +218,66 @@ const Title = ({ route, navigation }) => {
   );
 };
 
-
 const styles = StyleSheet.create({
-container: {
-  flexGrow: 1,
-  padding: 10,
-},
-headerContainer: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-},
-carTitle: {
-  fontSize: 20,
-  fontWeight: 'bold',
-},
-swiper: {
-  height: 250,
-},
-image: {
-  width: '100%',
-  height: '100%',
-  resizeMode: 'cover',
-},
-card: {
-  padding: 10,
-  backgroundColor: '#f8f8f8',
-  borderRadius: 10,
-  marginBottom: 10,
-},
-priceText: {
-  fontSize: 16,
-  fontWeight: 'bold',
-},
-description: {
-  fontSize: 14,
-  color: '#333',
-},
-detailsCard: {
-  marginBottom: 10,
-  padding: 10,
-  backgroundColor: '#f8f8f8',
-  borderRadius: 10,
-},
-detailsTitle: {
-  fontSize: 18,
-  fontWeight: 'bold',
-  marginBottom: 10,
-},
-buttonContainer: {
-  marginTop: 20,
-},
-heartContainer: {
-  alignItems: 'center',
-},
-heartIcon: {
-  marginTop: 10,
-},
-likeCount: {
-  fontSize: 14,
-  marginTop: 5,
-},
+  container: {
+    flexGrow: 1,
+    padding: 10,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  carTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  swiper: {
+    height: 250,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  card: {
+    padding: 10,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  priceText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  description: {
+    fontSize: 14,
+    color: '#333',
+  },
+  detailsCard: {
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 10,
+  },
+  detailsTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    marginTop: 20,
+  },
+  heartContainer: {
+    alignItems: 'center',
+  },
+  heartIcon: {
+    marginTop: 10,
+  },
+  likeCount: {
+    color: 'gray',
+    fontSize: 12,
+  },
 });
 
-export default Title;
+export default MaxsusDetails;

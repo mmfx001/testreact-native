@@ -13,14 +13,15 @@ const Home = ({ navigation }) => {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCarId, setSelectedCarId] = useState(null); // New state to store selected car's _id
 
   const categories = [
-    { id: '1', title: 'Sotish', icon: require('../assets/plus.png'), bg: '#007BFF' },
-    { id: '2', title: 'Avtomobillar', icon: require('../assets/mashina.png'), bg: '#f0f8ff' },
-    { id: '3', title: 'Yuk mashinalari', icon: require('../assets/gruz.png'), bg: '#f0f8ff' },
-    { id: '4', title: 'Ehtiyot qismlari va tovarlar', icon: require('../assets/zapchas.png'), bg: '#f0f8ff' },
-    { id: '5', title: 'Maxsus texnika', icon: require('../assets/trakt.png'), bg: '#f0f8ff' },
-    { id: '6', title: "Ta'mirlash va xizmatlar", icon: require('../assets/gayka.png'), bg: '#f0f8ff' },
+    { id: '1', title: 'Sotish', icon: require('../assets/plus.png'), bg: '#FF9800' },
+    { id: '2', title: 'Avtomobillar', icon: require('../assets/mashina.png'), bg: '#4CAF50' },
+    { id: '3', title: 'Yuk mashinalari', icon: require('../assets/gruz.png'), bg: '#2196F3' },
+    { id: '4', title: 'Ehtiyot qismlari va tovarlar', icon: require('../assets/zapchas.png'), bg: '#f44336' },
+    { id: '5', title: 'Maxsus texnika', icon: require('../assets/trakt.png'), bg: '#673AB7' },
+    { id: '6', title: "Ta'mirlash va xizmatlar", icon: require('../assets/gayka.png'), bg: '#FF5722' },
   ];
 
   useEffect(() => {
@@ -47,13 +48,13 @@ const Home = ({ navigation }) => {
         } else if (item.id === '4') {
           navigation.navigate('EhtiyotQismlari'); // Ehtiyot qismlar
         } else if (item.id === '5') {
-          navigation.navigate('MaxsusTexnika'); // Maxsus texnika
+          navigation.navigate('MaxsusTexnika',{ id: item._id }); // Maxsus texnika
         } else if (item.id === '3') {
           navigation.navigate('YukMashinalari'); // Yuk Mashinalari sahifasi
         } else if (item.id === '6') {
           navigation.navigate('Tamirlash'); // Ta'mirlash sahifasi
         } else {
-          navigation.navigate('Cars', { id: item.id }); // Kategoriya tafsilotlari
+          navigation.navigate('Cars', { id: item._id }); // Kategoriya tafsilotlari
         }
       }}
     >
@@ -65,7 +66,10 @@ const Home = ({ navigation }) => {
   const renderCar = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => navigation.navigate('Title', { car: item })} // Pass selected car data to Title page
+      onPress={() => {
+        setSelectedCarId(item._id); // Store the selected car's _id
+        navigation.navigate('Title', { data: item }); // Pass selected car data to Title page
+      }}
     >
       <View style={styles.imageContainer}>
         <Image
@@ -123,76 +127,88 @@ const Home = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    padding: 15,
+    backgroundColor: '#f8f8f8',
   },
   categoryContainer: {
-    paddingVertical: 10,
+    paddingVertical: 15,
   },
   categoryCard: {
     flex: 1,
     aspectRatio: 1, // Square shape
-    margin: 5,
+    margin: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: 15,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
   },
   categoryIcon: {
-    width: 40,
-    height: 40,
+    width: 45,
+    height: 45,
     marginBottom: 10,
   },
   categoryText: {
-    fontSize: 12,
-    color: '#000',
+    fontSize: 14,
+    color: '#fff',
     textAlign: 'center',
+    fontWeight: '600',
   },
   card: {
     backgroundColor: '#ffffff',
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 10,
+    borderRadius: 15,
+    padding: 15,
+    marginVertical: 15,
     elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   imageContainer: {
     position: 'relative',
   },
   image: {
     width: '100%',
-    height: 150,
-    borderRadius: 10,
+    height: 180,
+    borderRadius: 15,
+    resizeMode: 'cover',
   },
   vipBadge: {
     position: 'absolute',
     top: 10,
     left: 10,
-    backgroundColor: 'red',
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    borderRadius: 5,
+    backgroundColor: '#FF5722',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 10,
   },
   vipText: {
     color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '600',
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginVertical: 5,
+    marginVertical: 10,
     color: '#333',
   },
   price: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#007BFF',
   },
   details: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 5,
+    marginTop: 10,
   },
   detailText: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#555',
   },
   center: {
